@@ -23,7 +23,7 @@ export default ({mode}) => {
         publicDir: 'assets',
         server: {
             host: 'localhost',
-            port: 5181,
+            port: 5203,
             strictPort: true
         },
         build: {
@@ -34,7 +34,7 @@ export default ({mode}) => {
     process.env = {...process.env, ...loadEnv(mode, process.cwd())};
     const SKIP_BASE_PATH = process.env.VITE_SKIP_BASE_PATH;
     if (SKIP_BASE_PATH === undefined || SKIP_BASE_PATH === 'false')
-        config.base = '/mmsanagustin-iriga/';
+        config.base = '/mmaos-sbs-buhi/';
 
     return defineConfig(config);
 };
