@@ -1,6 +1,6 @@
 # mmaos-sbs-buhi
 
-Tabulation System for Ambassador and Ambasadress of Sports (Buhi)
+Tabulation System for Ambassador and Ambassadress of Sports (Buhi)
 
 ---
 ## Development Setup

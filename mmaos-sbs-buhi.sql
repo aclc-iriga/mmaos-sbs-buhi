@@ -105,7 +105,7 @@ CREATE TABLE `competitions` (
 --
 
 INSERT INTO `competitions` (`id`, `slug`, `title`, `created_at`, `updated_at`) VALUES
-(1, 'mmaos-sbs-buhi-2024', 'Ambassador and Ambasadress of Sports 2024', '2023-04-06 13:24:04', '2024-11-24 17:46:45');
+(1, 'mmaos-sbs-buhi-2024', 'Ambassador and Ambassadress of Sports 2024', '2023-04-06 13:24:04', '2024-11-24 17:46:45');
 
 -- --------------------------------------------------------
 
