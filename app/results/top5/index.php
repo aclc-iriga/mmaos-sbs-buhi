@@ -435,10 +435,10 @@
     <!-- Summary -->
     <div class="container-fluid mt-5" style="page-break-before: always;">
         <div class="row">
-            <!-- unordered -->
+            <!-- ordered -->
             <div class="col-md-6 offset-md-3" align="center">
                 <h4 class="opacity-75"><?= $category_title ?></h4>
-                <h1>TOP <?= sizeof($titles) + 1 ?></h1>
+                <h1>TOP <?= sizeof($titles) + 1 ?> (<?= ucfirst(rtrim(basename($_SERVER['PHP_SELF']), '.php')) ?>)</h1>
                 <div style="width: 80%;">
                     <table class="table table-bordered mt-3 ordered-winners">
                         <tbody>
