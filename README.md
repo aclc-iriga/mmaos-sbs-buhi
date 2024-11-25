@@ -1,4 +1,4 @@
-# mmaos-sbs-buhi
+# sbs-aaaos-buhi
 
 Tabulation System for Ambassador and Ambassadress of Sports (Buhi)
 
@@ -14,15 +14,15 @@ Here are the steps to set up the development environment for this project:
 2. Start Apache and MySQL through XAMPP if not already running.
 
 3. Clone or download this repository to your XAMPP **htdocs** folder.
-   The final path should be `path_to/xampp/htdocs/mmaos-sbs-buhi`.
+   The final path should be `path_to/xampp/htdocs/sbs-aaaos-buhi`.
 
 4. Copy [**`app/config/database.example.php`**](app/config/database.example.php)
    to **`app/config/database.php`**, then modify the database connection settings in the new file.
 
 5. Inside [phpMyAdmin](http://localhost/phpmyadmin),
-   create a MySQL database named `mmaos-sbs-buhi` and import [mmaos-sbs-buhi.sql](mmaos-sbs-buhi.sql) into it.
+   create a MySQL database named `sbs-aaaos-buhi` and import [sbs-aaaos-buhi.sql](sbs-aaaos-buhi.sql) into it.
 
-6. Open the terminal and navigate to the project directory **mmaos-sbs-buhi**.
+6. Open the terminal and navigate to the project directory **sbs-aaaos-buhi**.
 
 7. Execute the following commands to install the required dependencies:
    ```sh
@@ -34,7 +34,7 @@ Here are the steps to set up the development environment for this project:
    npm run dev
    ```
 
-9. Open your web browser and access <http://localhost:5203/mmaos-sbs-buhi/> to view the application.
+9. Open your web browser and access <http://localhost:5203/sbs-aaaos-buhi/> to view the application.
 
 
 ---
@@ -49,7 +49,7 @@ Before getting started, ensure that you have [**Composer**](https://getcomposer.
    to **`tests/backend/config/test-database.php`**, then modify the database connection settings in the new file.
 
 2. Inside [phpMyAdmin](http://localhost/phpmyadmin),
-   create a MySQL database named `test-mmaos-sbs-buhi` and import [mmaos-sbs-buhi.sql](mmaos-sbs-buhi.sql) into it.
+   create a MySQL database named `test-sbs-aaaos-buhi` and import [sbs-aaaos-buhi.sql](sbs-aaaos-buhi.sql) into it.
 
 3. Run the following command to install the required dependencies.
    ```shell
@@ -92,15 +92,15 @@ Here's how to compile the project for production deployment:
    npm run build
    ```
 
-2. Access the application by visiting `http://[host_name]/mmaos-sbs-buhi`,
+2. Access the application by visiting `http://[host_name]/sbs-aaaos-buhi`,
    where `host_name` is the **IP address** or **host name** of the server in the network.
    For example:
-     - <http://localhost/mmaos-sbs-buhi>
-     - <http://192.168.1.99/mmaos-sbs-buhi>
+     - <http://localhost/sbs-aaaos-buhi>
+     - <http://192.168.1.99/sbs-aaaos-buhi>
 
 
 #### Admin Dashboard
-Access the **admin dashboard** at <http://localhost/mmaos-sbs-buhi/app>.
+Access the **admin dashboard** at <http://localhost/sbs-aaaos-buhi/app>.
 The default ***username*** and ***password*** is `admin`.
 
 #### Printing Results
