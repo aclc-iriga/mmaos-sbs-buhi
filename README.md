@@ -1,6 +1,6 @@
 # sbs-aaaos-buhi
 
-Tabulation System for Ambassador and Ambassadress of Sports (Buhi)
+Tabulation System for Ambassador and Ambassadress of Sports (SBS Buhi)
 
 ---
 ## Development Setup

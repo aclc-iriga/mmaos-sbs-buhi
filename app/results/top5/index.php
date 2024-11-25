@@ -11,7 +11,9 @@
     require_once '../../models/Event.php';
 
     // initialize titles
-    $titles = ['1', '2', '3', '4', '5'];
+    $titles_1 = ['JHS 1', 'JHS 2'];
+    $titles_2 = ['SHS 1', 'SHS 2'];
+    $titles   = array_merge($titles_1, $titles_2);
 
     // initialize admin
     $admin = new Admin();
@@ -177,30 +179,72 @@
     sort($unique_final_fractional_ranks);
 
     // determine tops
-    $tops_ordered   = [];
-    $tops_unordered = [];
-    $i = 0;
-    foreach($titles as $title) {
-        // update title of $unique_final_fractional_ranks[$i]'th team
+    $tops_ordered = [];
+
+    // JHS tops
+    $tops_1_count = 0;
+    $titles_1_ctr = 0;
+    for($i = 0; $i < sizeof($unique_final_fractional_ranks); $i++) {
+        $has_winner = false;
         foreach($result as $team_key => $team) {
-            if($team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$i]) {
-                $result[$team_key]['title'] = $titles[$i];
-                $tops_ordered[]   = $team['info']['id'];
-                $tops_unordered[] = $team['info']['id'];
+            if(strtoupper(trim($team['info']['location'])) === 'JHS') {
+                if($team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$i]) {
+                    $has_winner = true;
+                    $result[$team_key]['title'] = $titles_1[$titles_1_ctr];
+                    $tops_ordered[] = $team['info']['id'];
+                    $tops_1_count += 1;
+                }
             }
         }
-
-        $i += 1;
-        if($i >= sizeof($unique_final_fractional_ranks))
+        if($has_winner) {
+            $titles_1_ctr += 1;
+        }
+        if($tops_1_count >= sizeof($titles_1) || $titles_1_ctr >= sizeof($titles_1)) {
             break;
+        }
     }
 
-    // sort $tops_ordered
-    sort($tops_ordered);
+    // SHS tops
+    $tops_2_count = 0;
+    $titles_2_ctr = 0;
+    for($i = 0; $i < sizeof($unique_final_fractional_ranks); $i++) {
+        $has_winner = false;
+        foreach($result as $team_key => $team) {
+            if(strtoupper(trim($team['info']['location'])) === 'SHS') {
+                if($team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$i]) {
+                    $has_winner = true;
+                    $result[$team_key]['title'] = $titles_2[$titles_2_ctr];
+                    $tops_ordered[] = $team['info']['id'];
+                    $tops_2_count += 1;
+                }
+            }
+        }
+        if($has_winner) {
+            $titles_2_ctr += 1;
+        }
+        if($tops_2_count >= sizeof($titles_2) || $titles_2_ctr >= sizeof($titles_2)) {
+            break;
+        }
+    }
 
-    // shuffle $tops_unordered (deterministic)
-    mt_srand(25143);
-    shuffle($tops_unordered);
+    // check if judges have unlocked ratings
+    $judges_with_unlocked_ratings = [];
+    foreach($judges as $judge) {
+        $unlocked_events = [];
+        foreach($events as $event) {
+            if($judge->hasUnlockedRatings($event)) {
+                $unlocked_events[] = $event->getTitle();
+            }
+        }
+        if(!empty($unlocked_events)) {
+            $unlocked_events = array_unique($unlocked_events);
+            $judges_with_unlocked_ratings[] = [
+                'name'   => $judge->getName(),
+                'number' => $judge->getNumber(),
+                'events' => implode(', ', $unlocked_events)
+            ];
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -225,15 +269,36 @@
         .bl {
             border-left: 2px solid #aaa !important;
         }
+        @media print {
+            .note {
+                display: none;
+            }
+        }
     </style>
-    <title>Top <?= sizeof($titles) ?> | <?= $category_title ?></title>
+    <title>Top <?= sizeof($titles) + 1 ?> | <?= $category_title ?></title>
 </head>
 <body>
+    <?php if (!empty($judges_with_unlocked_ratings)) { ?>
+        <div class="alert alert-danger text-center mb-0">
+            <h5><i class="fas fa-exclamation-triangle me-2"></i>Warning: The following judges have unlocked ratings:</h5>
+            <div class="d-flex flex-row justify-content-center">
+                <img src="../../crud/uploads/ramona.jpg" alt="Warning" style="height: 200px; padding-right: 10px; align-self: flex-end">
+                <ul class="list-unstyled mb-0">
+                    <?php foreach ($judges_with_unlocked_ratings as $judgeInfo) { ?>
+                        <li style="font-weight: bolder !important; font-size: larger">
+                            <?= $judgeInfo['name'] ?> (Judge <?= $judgeInfo['number'] ?>) - Events: <?= $judgeInfo['events'] ?>
+                        </li>
+                    <?php } ?>
+                </ul>
+            </div>
+            <p class="mt-2">Please make sure the ratings are all locked before finalizing results.</p>
+        </div>
+    <?php } ?>
     <table class="table table-bordered result">
         <thead>
             <tr class="table-secondary">
                 <th colspan="3" rowspan="2" class="text-center bt br bl">
-                    <h1 class="m-0">TOP <?= sizeof($titles) ?></h1>
+                    <h1 class="m-0">TOP <?= sizeof($titles) + 1 ?></h1>
                     <h5><?= $category_title ?></h5>
                 </th>
                 <?php for($i=0; $i<sizeof($events); $i++) { ?>
@@ -271,10 +336,10 @@
         <tbody>
         <?php
         foreach($result as $team_key => $team) { ?>
-            <tr<?= $team['title'] !== '' ? ' class="table-warning"' : '' ?>>
+            <tr data-team-id="<?= $team['info']['id'] ?>"<?= $team['title'] !== '' ? ' class="table-warning"' : '' ?>>
                 <!-- number -->
-                <td class="pe-3 fw-bold bl" align="right">
-                    <h4 class="m-0">
+                <td class="pe-3 fw-bold bl td-number" align="right" style="cursor: pointer; user-select: none">
+                    <h4 class="team-number m-0">
                         <?= $team['info']['number'] ?>
                     </h4>
                 </td>
@@ -282,6 +347,7 @@
                 <!-- avatar -->
                 <td style="width: 64px;" align="center">
                     <img
+                        class="team-avatar"
                         src="../../crud/uploads/<?= $team['info']['avatar'] ?>"
                         alt="<?= $team['info']['number'] ?>"
                         style="width: 64px; border-radius: 100%"
@@ -290,8 +356,8 @@
 
                 <!-- name -->
                 <td class="br">
-                    <h6 class="text-uppercase m-0"><?= $team['info']['name'] ?></h6>
-                    <small class="m-0"><?= $team['info']['location'] ?></small>
+                    <h6 class="team-name text-uppercase m-0"><?= $team['info']['name'] ?></h6>
+                    <small class="team-location m-0" data-location="<?= $team['info']['location'] ?>"><?= $team['info']['location'] ?></small>
                 </td>
 
                 <!-- averages -->
@@ -335,18 +401,21 @@
 
                 <!-- title -->
                 <td class="bl br fw-bold" align="center" style="line-height: 1.1">
-                    <h4 class="ma-0"><?= $team['title'] ?></h4>
+                    <h4 class="ma-0 team-title"><?= $team['title'] ?></h4>
                 </td>
             </tr>
         <?php } ?>
         </tbody>
     </table>
 
+    <!-- Note -->
+    <h4 class="note px-3 text-danger"><b>NOTE:</b> Double-click on a candidate's number above to add or remove them from the TOP <?= sizeof($titles) + 1 ?>.</h4>
+
     <!-- Judges -->
     <div class="container-fluid">
         <div class="row justify-content-center">
             <?php foreach($judges as $judge) { ?>
-                <div class="col-md-4">
+                <div class="col-sm-3">
                     <div class="mt-5 pt-3 text-center">
                         <h6 class="mb-0"><?= $judge->getName() ?></h6>
                     </div>
@@ -367,59 +436,17 @@
     <div class="container-fluid mt-5" style="page-break-before: always;">
         <div class="row">
             <!-- unordered -->
-            <div class="col-md-6" align="center">
+            <div class="col-md-6 offset-md-3" align="center">
                 <h4 class="opacity-75"><?= $category_title ?></h4>
-                <h1>TOP <?= sizeof($titles) ?> in Random Order</h1>
-                <h4>FOR ANNOUNCEMENT</h4>
+                <h1>TOP <?= sizeof($titles) + 1 ?></h1>
                 <div style="width: 80%;">
-                    <table class="table table-bordered mt-3">
-                        <tbody>
-                        <?php
-                        foreach($tops_unordered as $team_id) {
-                            $team = $result['team_'.$team_id];
-                        ?>
-                            <tr>
-                                <!-- number -->
-                                <td class="pe-3 fw-bold text-center">
-                                    <h3 class="m-0">
-                                        <?= $team['info']['number'] ?>
-                                    </h3>
-                                </td>
-
-                                <!-- avatar -->
-                                <td style="width: 72px;">
-                                    <img
-                                        src="../../crud/uploads/<?= $team['info']['avatar'] ?>"
-                                        alt="<?= $team['info']['number'] ?>"
-                                        style="width: 100%; border-radius: 100%"
-                                    >
-                                </td>
-
-                                <!-- name -->
-                                <td>
-                                    <h6 class="text-uppercase m-0"><?= $team['info']['name'] ?></h6>
-                                    <small class="m-0"><?= $team['info']['location'] ?></small>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ordered -->
-            <div class="col-md-6" align="center">
-                <h4 class="opacity-75"><?= $category_title ?></h4>
-                <h1>TOP <?= sizeof($titles) ?> in Proper Order</h1>
-                <h4>FOR FINAL Q & A</h4>
-                <div style="width: 80%;">
-                    <table class="table table-bordered mt-3">
+                    <table class="table table-bordered mt-3 ordered-winners">
                         <tbody>
                         <?php
                         foreach($tops_ordered as $team_id) {
                             $team = $result['team_'.$team_id];
                         ?>
-                            <tr>
+                            <tr data-team-id="<?= $team_id ?>">
                                 <!-- number -->
                                 <td class="pe-3 fw-bold text-center">
                                     <h3 class="m-0">
@@ -450,6 +477,56 @@
         </div>
     </div>
 
+    <script src="../../crud/dist/jquery-3.6.4/jquery-3.6.4.min.js"></script>
     <script src="../../crud/dist/bootstrap-5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(function() {
+            const tableResult  = $('table.result');
+            const tableWinners = $('table.ordered-winners');
+
+            tableResult.find('tbody .td-number').on('dblclick', function() {
+                const tr1 = $(this).parent();
+                const teamTitleElement = tr1.find('.team-title');
+                let   teamHasTitle = false;
+                if(teamTitleElement.length > 0) {
+                    teamHasTitle = teamTitleElement.text().trim() !== '';
+                }
+                if(tr1.hasClass('table-warning')) {
+                    if(confirm(`Are you sure to  REMOVE #${$(this).text().trim()}  from the TOP <?= sizeof($titles) + 1 ?>?`)) {
+                        const teamLocation = tr1.find('.team-location');
+                        teamLocation.html(`${teamLocation.attr('data-location')}`);
+                        tr1.removeClass('table-warning');
+                        tableWinners.find(`tbody tr[data-team-id="${tr1.attr('data-team-id')}"]`).remove();
+                    }
+                }
+                else {
+                    if(confirm(`Are you sure to  ADD #${$(this).text().trim()}  to the TOP <?= sizeof($titles) + 1 ?>${!teamHasTitle ? '  as the PEOPLE\'S CHOICE' : '?'}`)) {
+                        if(!teamHasTitle) {
+                            const teamLocation = tr1.find('.team-location');
+                            teamLocation.html(`${teamLocation.attr('data-location')} <b class="label text-success">(PEOPLE'S CHOICE)</b>`);
+                        }
+                        tr1.addClass('table-warning');
+                        const trWinner = `
+                            <tr data-team-id="${tr1.attr('data-team-id')}">
+                                <td class="pe-3 fw-bold text-center">
+                                    <h3 class="m-0">
+                                        ${tr1.find('.team-number').text()}
+                                    </h3>
+                                </td>
+                                <td style="width: 72px;">
+                                    <img src="${tr1.find('.team-avatar').attr('src')}" alt="5" style="width: 100%; border-radius: 100%">
+                                </td>
+                                <td>
+                                    <h6 class="text-uppercase m-0">${tr1.find('.team-name').text()}</h6>
+                                    <small class="m-0">${tr1.find('.team-location').html()}</small>
+                                </td>
+                            </tr>
+                        `;
+                        tableWinners.find('tbody').append(trWinner);
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
