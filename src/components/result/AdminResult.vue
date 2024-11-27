@@ -164,6 +164,7 @@
                 </td>
                 <td
                     v-for="judge in judges" :key="judge.id"
+                    :style="{ 'flex': `0 0 ${(signatoryColumnWidth / 12) * 100}%`, 'max-width': `${(signatoryColumnWidth / 12) * 100}%` }"
                     class="text-right"
                     :class="{
                         'bg-grey-lighten-3' : !team.ratings.inputs[`judge_${judge.id}`].final.is_locked,
@@ -238,7 +239,7 @@
                     <v-row class="justify-center">
                         <v-col
                             v-for="technical in technicals" :key="technical.id"
-                            :md="signatoryColumnWidth"
+                            :style="{ 'flex': `0 0 ${(signatoryColumnWidth / 12) * 100}%`, 'max-width': `${(signatoryColumnWidth / 12) * 100}%` }"
                         >
                             <v-card class="text-center mb-5" :class="{ 'text-warning': technical.calling }" flat>
                                 <v-card-title class="pt-16 pb-1 font-weight-bold">

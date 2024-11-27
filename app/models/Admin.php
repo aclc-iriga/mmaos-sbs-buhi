@@ -358,21 +358,80 @@ class Admin extends User
         sort($unique_final_fractional_ranks);
 
         // determine winners (case-to-case basis depending on organizer's guidelines)
-        $i = 0;
-        foreach($event->getAllTitles() as $key_title => $title) {
-            // update title of $unique_final_fractional_ranks[$i]'th team
-            foreach($result['teams'] as $key_team => $arr_team) {
-                if($arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$i]) {
-                    $t = trim($title->getTitle());
-                    $result['teams'][$key_team]['title'] = $t;
-                    if($t != '')
-                        $result['winners'][$key_team] = $t;
+        if(in_array($event->getSlug(), ['final-qa-1', 'final-qa-2'])) {
+            // get titles excluding blank ones
+            $event_titles = [];
+            foreach($event->getAllTitles() as $key_title => $title) {
+                if(trim($title->getTitle()) !== '')
+                    $event_titles[$key_title] = $title;
+            }
+
+            // main winners
+            $enum_location_in_order = [['JHS', 'SHS'], ['SHS'], ['JHS']]; // `teams`.`location`
+            for($l = 0; $l < sizeof($enum_location_in_order); $l++) {
+                $enum_location = $enum_location_in_order[$l];
+                foreach($event_titles as $key_title => $title) {
+                    if($title->getRank() == ($l + 1)) {
+                        $filled = false;
+                        for($j=0; $j<sizeof($unique_final_fractional_ranks); $j++) {
+                            foreach($result['teams'] as $key_team => $arr_team) {
+                                if(!isset($result['winners'][$key_team])) {
+                                    if($arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$j]) {
+                                        if(in_array(strtoupper(trim((Team::findById($arr_team['id']))->getLocation())), $enum_location)) {
+                                            $t = trim($title->getTitle());
+                                            $result['teams'][$key_team]['title'] = $t;
+                                            $result['winners'][$key_team] = $t;
+                                            $filled = true;
+                                        }
+                                    }
+                                }
+                            }
+                            if($filled)
+                                break;
+                        }
+                        break;
+                    }
                 }
             }
 
-            $i += 1;
-            if($i >= sizeof($unique_final_fractional_ranks))
-                break;
+            // runner ups
+            foreach($event_titles as $key_title => $title) {
+                if(!in_array($title->getRank(), [1, 2, 3])) {
+                    $filled = false;
+                    for($j=0; $j<sizeof($unique_final_fractional_ranks); $j++) {
+                        foreach ($result['teams'] as $key_team => $arr_team) {
+                            if(!isset($result['winners'][$key_team])) {
+                                if($arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$j]) {
+                                    $t = trim($title->getTitle());
+                                    $result['teams'][$key_team]['title'] = $t;
+                                    $result['winners'][$key_team] = $t;
+                                    $filled = true;
+                                }
+                            }
+                        }
+                        if($filled)
+                            break;
+                    }
+                }
+            }
+        }
+        else {
+            $i = 0;
+            foreach($event->getAllTitles() as $key_title => $title) {
+                // update title of $unique_final_fractional_ranks[$i]'th team
+                foreach($result['teams'] as $key_team => $arr_team) {
+                    if($arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$i]) {
+                        $t = trim($title->getTitle());
+                        $result['teams'][$key_team]['title'] = $t;
+                        if($t != '')
+                            $result['winners'][$key_team] = $t;
+                    }
+                }
+
+                $i += 1;
+                if($i >= sizeof($unique_final_fractional_ranks))
+                    break;
+            }
         }
 
         // return $result

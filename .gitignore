@@ -47,6 +47,7 @@ app/crud/uploads/*
 !app/crud/uploads/ms-12-anna-jelena-sabinorio.jpg
 !app/crud/uploads/ms-13-jillian-chloe-tabajonda.jpg
 !app/crud/uploads/ms-14-jhane-elizabeth-cornelio.jpg
+!app/crud/uploads/ramona.jpg
 !app/crud/uploads/no-avatar.jpg
 !app/crud/dist
 /cypress/videos/

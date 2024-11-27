@@ -36,7 +36,7 @@
 </head>
 <body>
     <div class="container py-5">
-        <h2 class="fw-bolder">Ambassador and Ambassadress of Sports (Buhi) 2023</h2>
+        <h2 class="fw-bolder">Ambassador and Ambassadress of Sports (SBS Buhi) 2024</h2>
     </div>
     <div>
         <table>

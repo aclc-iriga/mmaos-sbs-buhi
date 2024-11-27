@@ -12,7 +12,7 @@ export default createStore({
 
     state: {
         app: {
-            title: 'Mr. and Ms. San Agustin 2023',
+            title: 'Ambassador and Ambassadress 2024',
             org: 'ACLC College Iriga',
             backendDir: 'app',
             sideNav: false
@@ -21,8 +21,8 @@ export default createStore({
             height: 0
         },
         rating: {
-            min: 70,
-            max: 100
+            min: 80,
+            max: 95
         },
         deduction: {
             min: 0,
